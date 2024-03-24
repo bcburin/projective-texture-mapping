@@ -58,8 +58,9 @@ class Polygon:
         raise ValueError("Cannot form polygon")
 
     def as_list(self, orientation: Orientation | None = None):
-        p_orientation = get_orientation(self._points[0], self._points[1], self._points[2])
-        if p_orientation is None or p_orientation == orientation:
+        if orientation is None:
             return self._points
-        else:
-            return self.invert_polygon_orientation(self._points)
+        p_orientation = get_orientation(self._points[0], self._points[1], self._points[2])
+        if p_orientation == orientation:
+            return self._points
+        return self.invert_polygon_orientation(self._points)
