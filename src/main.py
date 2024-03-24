@@ -21,14 +21,14 @@ p = [(0, 0, 1), (x, 0, 1), (0, y, 1), (x, y, 1)]
 q = [(212, 152, 1), (723, 203, 1), (191, 566, 1), (711, 569, 1)]
 
 a = np.array([[p[k][j] for j in range(3)] for k in range(4)])
-b = [np.diag([q[k][i] for k in range(4)]) for i in range(3)]
+b = [np.diag([-q[k][i] for k in range(4)]) for i in range(3)]
 
 matrix = np.zeros((12, 13))
 
 # Insert submatrices into the final matrix
 matrix[:4, :3] = a
-matrix[4:8, 4:7] = a
-matrix[8:12, 7:10] = a
+matrix[4:8, 3:6] = a
+matrix[8:12, 6:9] = a
 
 matrix[:4, 9:] = b[0]
 matrix[4:8, 9:] = b[1]
@@ -40,25 +40,7 @@ matrix = np.vstack((matrix, np.append(np.zeros(12), 1)))
 vet = np.zeros(13)
 vet[-1] = 1
 
-matrix_brute_force = [[p[0][0], p[0][1], p[0][2], 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, p[0][0], p[0][1], p[0][2], 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, p[0][0], p[0][1], p[0][2], 0, 0, 0],
-                      [p[1][0], p[1][1], p[1][2], 0, 0, 0, 0, 0, 0, -q[1][0], 0, 0],
-                      [0, 0, 0, p[1][0], p[1][1], p[1][2], 0, 0, 0, -q[1][1], 0, 0],
-                      [0, 0, 0, 0, 0, 0, p[1][0], p[1][1], p[1][2], -q[1][2], 0, 0],
-                      [p[2][0], p[2][1], p[2][2], 0, 0, 0, 0, 0, 0, 0, -q[2][0], 0],
-                      [0, 0, 0, p[2][0], p[2][1], p[2][2], 0, 0, 0, 0, -q[2][1], 0],
-                      [0, 0, 0, 0, 0, 0, p[2][0], p[2][1], p[2][2], 0, -q[2][2], 0],
-                      [p[3][0], p[3][1], p[3][2], 0, 0, 0, 0, 0, 0, 0, 0, -q[3][0]],
-                      [0, 0, 0, p[3][0], p[3][1], p[3][2], 0, 0, 0, 0, 0, -q[3][1]],
-                      [0, 0, 0, 0, 0, 0, p[3][0], p[3][1], p[3][2], 0, 0, -q[3][2]]]
-
-column_brute_force = [q[0][0], q[0][1], q[0][2], 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-print(np.array(matrix_brute_force))
-
-#sol = np.linalg.solve(matrix, vet)
-sol = np.linalg.solve(matrix_brute_force, column_brute_force)
+sol = np.linalg.solve(matrix, vet)
 print(sol)
 
 coefficients = sol[:9]
