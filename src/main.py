@@ -1,9 +1,27 @@
+import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+
+
+# Initialize click counter
+click_count = 0
+
+
+def on_click(event):
+    global click_count
+    if click_count < 4:
+        print(f"Clicked {click_count + 1} time(s) at ({event.xdata:.2f}, {event.ydata:.2f})")
+        click_count += 1
+    if click_count == 4:
+        fig.canvas.mpl_disconnect(cid)
+        plt.close()
+
 
 # interpolação onde d é a distância entre os pixels e f00 e f01 representam a cor em cada pixel
 def interpolacao(f00, f01, d):
     return (1-d)*f00 + d*f01
+
+
 def bilinear(f00, f01, f10, f11, d1, d2):
     return int(interpolacao(interpolacao(f00,f01,d1), interpolacao(f10,f11,d1), d2))
 
@@ -13,6 +31,19 @@ im2 = Image.open("../statics/aula-raquel.jpeg")
 
 (x,y) = im1.size
 (z,w) = im2.size
+
+# Load your image
+image = plt.imread('../statics/aula-raquel.jpeg')
+
+# Display the image
+fig, ax = plt.subplots()
+ax.imshow(image)
+plt.title('Click four points on the image')
+
+# Capture mouse clicks
+cid = fig.canvas.mpl_connect('button_press_event', on_click)
+
+plt.show()
 
 # Pontos da textura
 p = [(0, 0, 1), (x, 0, 1), (0, y, 1), (x, y, 1)]
@@ -37,28 +68,7 @@ matrix[8:12, 9:] = b[2]
 # Add a final row with all zeros except the last element as 1
 matrix = np.vstack((matrix, np.append(np.zeros(12), 1)))
 
-vet = np.zeros(13)
-vet[-1] = 1
-
-matrix_brute_force = [[p[0][0], p[0][1], p[0][2], 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, p[0][0], p[0][1], p[0][2], 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, p[0][0], p[0][1], p[0][2], 0, 0, 0],
-                      [p[1][0], p[1][1], p[1][2], 0, 0, 0, 0, 0, 0, -q[1][0], 0, 0],
-                      [0, 0, 0, p[1][0], p[1][1], p[1][2], 0, 0, 0, -q[1][1], 0, 0],
-                      [0, 0, 0, 0, 0, 0, p[1][0], p[1][1], p[1][2], -q[1][2], 0, 0],
-                      [p[2][0], p[2][1], p[2][2], 0, 0, 0, 0, 0, 0, 0, -q[2][0], 0],
-                      [0, 0, 0, p[2][0], p[2][1], p[2][2], 0, 0, 0, 0, -q[2][1], 0],
-                      [0, 0, 0, 0, 0, 0, p[2][0], p[2][1], p[2][2], 0, -q[2][2], 0],
-                      [p[3][0], p[3][1], p[3][2], 0, 0, 0, 0, 0, 0, 0, 0, -q[3][0]],
-                      [0, 0, 0, p[3][0], p[3][1], p[3][2], 0, 0, 0, 0, 0, -q[3][1]],
-                      [0, 0, 0, 0, 0, 0, p[3][0], p[3][1], p[3][2], 0, 0, -q[3][2]]]
-
-column_brute_force = [q[0][0], q[0][1], q[0][2], 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-print(np.array(matrix_brute_force))
-
-#sol = np.linalg.solve(matrix, vet)
-sol = np.linalg.solve(matrix_brute_force, column_brute_force)
+sol = np.linalg.solve(matrix, np.append(np.zeros(12), 1))
 print(sol)
 
 coefficients = sol[:9]
