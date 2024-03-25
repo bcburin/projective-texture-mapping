@@ -1,3 +1,6 @@
+from argparse import ArgumentParser
+from pathlib import Path
+
 from PIL import Image
 
 from src.polygon import Orientation
@@ -5,10 +8,30 @@ from src.projection import get_transformation_matrix, project_texture_on_image
 from src.selector import PointSelector
 
 
+def create_parser() -> ArgumentParser:
+    parser = ArgumentParser()
+    parser.add_argument('image', help='base image onto which project texture')
+    parser.add_argument('texture', help='texture image to be projected')
+    parser.add_argument('-o', '--out',
+                        help='name of the output file for the image, no file extension', default='out')
+    parser.add_argument('--out-extension',
+                        help='extension to use in the output file, same as base image by default')
+    parser.add_argument('--out-directory',
+                        help='directory where the output image file should be saved, by default same as base image')
+    return parser
+
+
 def main():
+    # parse arguments
+    args = create_parser().parse_args()
+    path_base_image = Path(args.image)
+    path_texture = Path(args.texture)
+    out_extension = ('.' + args.out_extension if args.out_extension else None) or path_base_image.suffix
+    dir_out_file = args.out_directory or path_base_image.parent
+    path_out_file = dir_out_file / (args.out + out_extension)
     # open images
-    texture = Image.open('../statics/generic-diva-sim.jpg')
-    image = Image.open('../statics/aula-raquel.jpeg')
+    texture = Image.open(path_base_image)
+    image = Image.open(path_texture)
     # request four points as a quadrilateral from user
     quadrilateral = PointSelector().request_polygon_from('../statics/aula-raquel.jpeg', n=4)
     # calculate projective coordinates of the mapping of the texture onto the base image
@@ -20,7 +43,7 @@ def main():
     # put pixels of the texture on the base image
     project_texture_on_image(base=image, texture=texture, transformation=transformation)
     # save base image
-    image.save("out.jpg")
+    image.save(path_out_file)
 
 
 if __name__ == '__main__':
