@@ -51,6 +51,9 @@ def do_projection_and_save_output(path_base_image: Pathstr, path_texture: Pathst
     project_texture_on_image(base=image, texture=texture, transformation=transformation)
     # save base image
     image.save(path_out_file)
+    # release resources
+    image.close()
+    texture.close()
 
 
 if __name__ == '__main__':
