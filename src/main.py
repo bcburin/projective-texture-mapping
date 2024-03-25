@@ -7,6 +7,8 @@ from src.polygon import Orientation
 from src.projection import get_transformation_matrix, project_texture_on_image
 from src.selector import PointSelector
 
+Pathstr = Path | str
+
 
 def create_parser() -> ArgumentParser:
     parser = ArgumentParser()
@@ -26,9 +28,14 @@ def main():
     args = create_parser().parse_args()
     path_base_image = Path(args.image)
     path_texture = Path(args.texture)
-    out_extension = ('.' + args.out_extension if args.out_extension else None) or path_base_image.suffix
+    out_extension = '.' + args.out_extension if args.out_extension else path_base_image.suffix
     dir_out_file = args.out_directory or path_base_image.parent
     path_out_file = dir_out_file / (args.out + out_extension)
+    # do projection calculations and save output file
+    do_projection_and_save_output(path_base_image, path_texture, path_out_file)
+
+
+def do_projection_and_save_output(path_base_image: Pathstr, path_texture: Pathstr, path_out_file: Pathstr):
     # open images
     image = Image.open(path_base_image)
     texture = Image.open(path_texture)
