@@ -36,27 +36,28 @@ def project_texture_on_image(base: Image, texture: Image, transformation: array)
     (x_tex, y_tex) = texture.size
     (x_img, y_img) = base.size
     transformation_inv = np.linalg.inv(transformation)
+    # iterate pixels of base image
     for x_pixel in range(x_img):
         for y_pixel in range(y_img):
+            # calculate coordinates of the pixel in texture-based coordinates
             v = [x_pixel, y_pixel, 1]
             i, j, k = transformation_inv @ v
             i = float(i) / k
             j = float(j) / k
+            # if the transformed pixel lies within the texture, update color in base image
             if 0 <= i < (x_tex - 1) and 0 <= j < (y_tex - 1):
                 p00 = (int(i), int(j))
                 p10 = (int(i) + 1, int(j))
                 p01 = (int(i), int(j) + 1)
                 p11 = (int(i) + 1, int(j) + 1)
-
+                # get the four pixels closest to the coordinates found
                 f00 = texture.getpixel(p00)
                 f10 = texture.getpixel(p10)
                 f01 = texture.getpixel(p01)
                 f11 = texture.getpixel(p11)
-
+                # interpolate colors of the surrounding pixels according to the relative distances
                 r = bilinear_interpolation(f00[0], f01[0], f10[0], f11[0], i - int(i), j - int(j))
                 g = bilinear_interpolation(f00[1], f01[1], f10[1], f11[1], i - int(i), j - int(j))
                 b = bilinear_interpolation(f00[2], f01[2], f10[2], f11[2], i - int(i), j - int(j))
-
+                # update color in base image
                 base.putpixel((x_pixel, y_pixel), (r, g, b))
-
-
