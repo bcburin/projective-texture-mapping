@@ -30,10 +30,10 @@ def main():
     dir_out_file = args.out_directory or path_base_image.parent
     path_out_file = dir_out_file / (args.out + out_extension)
     # open images
-    texture = Image.open(path_base_image)
-    image = Image.open(path_texture)
+    image = Image.open(path_base_image)
+    texture = Image.open(path_texture)
     # request four points as a quadrilateral from user
-    quadrilateral = PointSelector().request_polygon_from('../statics/aula-raquel.jpeg', n=4)
+    quadrilateral = PointSelector().request_polygon_from(path_base_image, n=4)
     # calculate projective coordinates of the mapping of the texture onto the base image
     (x_tex, y_tex) = texture.size
     p = [(0, 0, 1), (x_tex, 0, 1), (x_tex, y_tex, 1), (0, y_tex, 1)]

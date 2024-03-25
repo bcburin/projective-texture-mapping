@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 from numpy import array
 
@@ -23,7 +25,7 @@ class PointSelector:
             self._fig.canvas.mpl_disconnect(self._cid)
             plt.close()
 
-    def request_polygon_from(self, image_path: str, n: int) -> Polygon:
+    def request_polygon_from(self, image_path: str | Path, n: int) -> Polygon:
         # Load your image
         image = plt.imread(image_path)
         # Display the image
